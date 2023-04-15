@@ -1,0 +1,175 @@
+[
+    {
+        "label": "FastAPI",
+        "importPath": "fastapi",
+        "description": "fastapi",
+        "isExtraImport": true,
+        "detail": "fastapi",
+        "documentation": {}
+    },
+    {
+        "label": "MongoClient",
+        "importPath": "pymongo",
+        "description": "pymongo",
+        "isExtraImport": true,
+        "detail": "pymongo",
+        "documentation": {}
+    },
+    {
+        "label": "yfinance",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "yfinance",
+        "description": "yfinance",
+        "detail": "yfinance",
+        "documentation": {}
+    },
+    {
+        "label": "ObjectId",
+        "importPath": "bson",
+        "description": "bson",
+        "isExtraImport": true,
+        "detail": "bson",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "timedelta",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "CORSMiddleware",
+        "importPath": "fastapi.middleware.cors",
+        "description": "fastapi.middleware.cors",
+        "isExtraImport": true,
+        "detail": "fastapi.middleware.cors",
+        "documentation": {}
+    },
+    {
+        "label": "BackgroundScheduler",
+        "importPath": "apscheduler.schedulers.background",
+        "description": "apscheduler.schedulers.background",
+        "isExtraImport": true,
+        "detail": "apscheduler.schedulers.background",
+        "documentation": {}
+    },
+    {
+        "label": "requests",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "requests",
+        "description": "requests",
+        "detail": "requests",
+        "documentation": {}
+    },
+    {
+        "label": "fetch_data",
+        "kind": 2,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "def fetch_data(symbol: str):\n    stock = yf.Ticker(symbol)\n    data = stock.history(period=\"max\").reset_index().to_dict(\"records\")\n    collection = db[symbol]\n    collection.insert_many(data)\n    return {\"message\": f\"{len(data)} records fetched and saved into {symbol} collection.\"}\n# This end point will sent stocks data from database to frontEnd\n@app.get(\"/get_stocks/{symbol}\")\ndef get_data(symbol: str):\n    collection = db[symbol]",
+        "detail": "main",
+        "documentation": {}
+    },
+    {
+        "label": "get_data",
+        "kind": 2,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "def get_data(symbol: str):\n    collection = db[symbol]\n    data = list(collection.find({}, {'_id': 0}))\n    for item in data:\n        for key, value in item.items():\n            if isinstance(value, ObjectId):\n                item[key] = str(value)\n    return {\"symbol\": symbol, \"data\": data}\n# This end point will sent tickers symbol list avaliable in database\n@app.get(\"/stocks_in_db\")",
+        "detail": "main",
+        "documentation": {}
+    },
+    {
+        "label": "get_collections",
+        "kind": 2,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "def get_collections():\n    stocks = db.list_collection_names()\n    return {\"stocks\": stocks}\nscheduler = BackgroundScheduler()\ndef fetch_stocks(symbols: list):\n    for symbol in symbols:\n        url = f\"http://localhost:8000/fetch_stocks/{symbol}\"\n        response = requests.get(url)\n        print(response.json())\ndef fetch_stocks_dynamic():",
+        "detail": "main",
+        "documentation": {}
+    },
+    {
+        "label": "fetch_stocks",
+        "kind": 2,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "def fetch_stocks(symbols: list):\n    for symbol in symbols:\n        url = f\"http://localhost:8000/fetch_stocks/{symbol}\"\n        response = requests.get(url)\n        print(response.json())\ndef fetch_stocks_dynamic():\n    # Get the list of tickers from the endpoint\n    tickers_url = \"http://localhost:8000/stocks_in_db\" \n    tickers_response = requests.get(tickers_url)\n    tickers_data = tickers_response.json()",
+        "detail": "main",
+        "documentation": {}
+    },
+    {
+        "label": "fetch_stocks_dynamic",
+        "kind": 2,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "def fetch_stocks_dynamic():\n    # Get the list of tickers from the endpoint\n    tickers_url = \"http://localhost:8000/stocks_in_db\" \n    tickers_response = requests.get(tickers_url)\n    tickers_data = tickers_response.json()\n    symbols = tickers_data[\"stocks\"]\n    # Fetch data for each ticker\n    for symbol in symbols:\n        url = f\"http://localhost:8000/fetch_stocks/{symbol}\"\n        response = requests.get(url)",
+        "detail": "main",
+        "documentation": {}
+    },
+    {
+        "label": "app",
+        "kind": 5,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "app = FastAPI()\napp.add_middleware(\n    CORSMiddleware,\n    allow_origins=[\"*\"],\n    allow_credentials=True,\n    allow_methods=[\"*\"],\n    allow_headers=[\"*\"],\n)\nclient = MongoClient(\"mongodb://localhost:27017/\")\ndb = client[\"finance\"]",
+        "detail": "main",
+        "documentation": {}
+    },
+    {
+        "label": "client",
+        "kind": 5,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "client = MongoClient(\"mongodb://localhost:27017/\")\ndb = client[\"finance\"]\ncollection = db[\"stocks\"]\n# This end point will fetch stocks from yfinance and save into our database\n@app.get(\"/fetch_stocks/{symbol}\")\ndef fetch_data(symbol: str):\n    stock = yf.Ticker(symbol)\n    data = stock.history(period=\"max\").reset_index().to_dict(\"records\")\n    collection = db[symbol]\n    collection.insert_many(data)",
+        "detail": "main",
+        "documentation": {}
+    },
+    {
+        "label": "db",
+        "kind": 5,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "db = client[\"finance\"]\ncollection = db[\"stocks\"]\n# This end point will fetch stocks from yfinance and save into our database\n@app.get(\"/fetch_stocks/{symbol}\")\ndef fetch_data(symbol: str):\n    stock = yf.Ticker(symbol)\n    data = stock.history(period=\"max\").reset_index().to_dict(\"records\")\n    collection = db[symbol]\n    collection.insert_many(data)\n    return {\"message\": f\"{len(data)} records fetched and saved into {symbol} collection.\"}",
+        "detail": "main",
+        "documentation": {}
+    },
+    {
+        "label": "collection",
+        "kind": 5,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "collection = db[\"stocks\"]\n# This end point will fetch stocks from yfinance and save into our database\n@app.get(\"/fetch_stocks/{symbol}\")\ndef fetch_data(symbol: str):\n    stock = yf.Ticker(symbol)\n    data = stock.history(period=\"max\").reset_index().to_dict(\"records\")\n    collection = db[symbol]\n    collection.insert_many(data)\n    return {\"message\": f\"{len(data)} records fetched and saved into {symbol} collection.\"}\n# This end point will sent stocks data from database to frontEnd",
+        "detail": "main",
+        "documentation": {}
+    },
+    {
+        "label": "scheduler",
+        "kind": 5,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "scheduler = BackgroundScheduler()\ndef fetch_stocks(symbols: list):\n    for symbol in symbols:\n        url = f\"http://localhost:8000/fetch_stocks/{symbol}\"\n        response = requests.get(url)\n        print(response.json())\ndef fetch_stocks_dynamic():\n    # Get the list of tickers from the endpoint\n    tickers_url = \"http://localhost:8000/stocks_in_db\" \n    tickers_response = requests.get(tickers_url)",
+        "detail": "main",
+        "documentation": {}
+    },
+    {
+        "label": "symbols1",
+        "kind": 5,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "symbols1 = [\"AMZN\", \"MSFT\", \"GOOG\", \"TSLA\", \"AAPL\"]\nscheduler.add_job(fetch_stocks, \"interval\", seconds=60, args=[symbols1])\nscheduler.add_job(fetch_stocks_dynamic, \"cron\", hour=0)\nscheduler.start()",
+        "detail": "main",
+        "documentation": {}
+    }
+]
