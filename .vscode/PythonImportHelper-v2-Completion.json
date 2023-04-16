@@ -8,6 +8,14 @@
         "documentation": {}
     },
     {
+        "label": "HTTPException",
+        "importPath": "fastapi",
+        "description": "fastapi",
+        "isExtraImport": true,
+        "detail": "fastapi",
+        "documentation": {}
+    },
+    {
         "label": "MongoClient",
         "importPath": "pymongo",
         "description": "pymongo",
@@ -78,7 +86,7 @@
         "kind": 2,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "def fetch_data(symbol: str):\n    stock = yf.Ticker(symbol)\n    data = stock.history(period=\"max\").reset_index().to_dict(\"records\")\n    collection = db[symbol]\n    collection.insert_many(data)\n    return {\"message\": f\"{len(data)} records fetched and saved into {symbol} collection.\"}\n# This end point will sent stocks data from database to frontEnd\n@app.get(\"/get_stocks/{symbol}\")\ndef get_data(symbol: str):\n    collection = db[symbol]",
+        "peekOfCode": "def fetch_data(symbol: str):\n    stock = yf.Ticker(symbol)\n    data = stock.history(period=\"max\")\n    if data.empty:\n        raise HTTPException(status_code=400, detail=f\"No data exists for {symbol}. Try with these tickers: AAPL, META, TSLA\")\n    data = data.reset_index().to_dict(\"records\")\n    collection = db[symbol]\n    collection.insert_many(data)\n    return {\"message\": f\"{len(data)} records fetched and saved into {symbol} collection.\"}\n# This end point will sent stocks data from database to frontEnd",
         "detail": "main",
         "documentation": {}
     },
@@ -132,7 +140,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "client = MongoClient(\"mongodb://localhost:27017/\")\ndb = client[\"finance\"]\ncollection = db[\"stocks\"]\n# This end point will fetch stocks from yfinance and save into our database\n@app.get(\"/fetch_stocks/{symbol}\")\ndef fetch_data(symbol: str):\n    stock = yf.Ticker(symbol)\n    data = stock.history(period=\"max\").reset_index().to_dict(\"records\")\n    collection = db[symbol]\n    collection.insert_many(data)",
+        "peekOfCode": "client = MongoClient(\"mongodb://localhost:27017/\")\ndb = client[\"finance\"]\ncollection = db[\"stocks\"]\n# This end point will fetch stocks from yfinance and save into our database\n@app.get(\"/fetch_stocks/{symbol}\")\ndef fetch_data(symbol: str):\n    stock = yf.Ticker(symbol)\n    data = stock.history(period=\"max\")\n    if data.empty:\n        raise HTTPException(status_code=400, detail=f\"No data exists for {symbol}. Try with these tickers: AAPL, META, TSLA\")",
         "detail": "main",
         "documentation": {}
     },
@@ -141,7 +149,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "db = client[\"finance\"]\ncollection = db[\"stocks\"]\n# This end point will fetch stocks from yfinance and save into our database\n@app.get(\"/fetch_stocks/{symbol}\")\ndef fetch_data(symbol: str):\n    stock = yf.Ticker(symbol)\n    data = stock.history(period=\"max\").reset_index().to_dict(\"records\")\n    collection = db[symbol]\n    collection.insert_many(data)\n    return {\"message\": f\"{len(data)} records fetched and saved into {symbol} collection.\"}",
+        "peekOfCode": "db = client[\"finance\"]\ncollection = db[\"stocks\"]\n# This end point will fetch stocks from yfinance and save into our database\n@app.get(\"/fetch_stocks/{symbol}\")\ndef fetch_data(symbol: str):\n    stock = yf.Ticker(symbol)\n    data = stock.history(period=\"max\")\n    if data.empty:\n        raise HTTPException(status_code=400, detail=f\"No data exists for {symbol}. Try with these tickers: AAPL, META, TSLA\")\n    data = data.reset_index().to_dict(\"records\")",
         "detail": "main",
         "documentation": {}
     },
@@ -150,7 +158,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "collection = db[\"stocks\"]\n# This end point will fetch stocks from yfinance and save into our database\n@app.get(\"/fetch_stocks/{symbol}\")\ndef fetch_data(symbol: str):\n    stock = yf.Ticker(symbol)\n    data = stock.history(period=\"max\").reset_index().to_dict(\"records\")\n    collection = db[symbol]\n    collection.insert_many(data)\n    return {\"message\": f\"{len(data)} records fetched and saved into {symbol} collection.\"}\n# This end point will sent stocks data from database to frontEnd",
+        "peekOfCode": "collection = db[\"stocks\"]\n# This end point will fetch stocks from yfinance and save into our database\n@app.get(\"/fetch_stocks/{symbol}\")\ndef fetch_data(symbol: str):\n    stock = yf.Ticker(symbol)\n    data = stock.history(period=\"max\")\n    if data.empty:\n        raise HTTPException(status_code=400, detail=f\"No data exists for {symbol}. Try with these tickers: AAPL, META, TSLA\")\n    data = data.reset_index().to_dict(\"records\")\n    collection = db[symbol]",
         "detail": "main",
         "documentation": {}
     },

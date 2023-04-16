@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI ,HTTPException
 from pymongo import MongoClient
 import yfinance as yf
 from bson import ObjectId
@@ -25,7 +25,10 @@ collection = db["stocks"]
 @app.get("/fetch_stocks/{symbol}")
 def fetch_data(symbol: str):
     stock = yf.Ticker(symbol)
-    data = stock.history(period="max").reset_index().to_dict("records")
+    data = stock.history(period="max")
+    if data.empty:
+        raise HTTPException(status_code=400, detail=f"No data exists for {symbol}. Try with these tickers: AAPL, META, TSLA")
+    data = data.reset_index().to_dict("records")
     collection = db[symbol]
     collection.insert_many(data)
     return {"message": f"{len(data)} records fetched and saved into {symbol} collection."}
